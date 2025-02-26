@@ -9,8 +9,26 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@shadcn/ui": "^0.0.4",
+    "@tailwindcss/postcss": "^4.0.9",
+    "@yudiel/react-qr-scanner": "^2.2.1",
+    "axios": "^1.8.0",
+    "framer-motion": "^12.4.7",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "lottie-react": "^2.4.1",
+    "next": "15.1.7",
+    "qrcode": "^1.5.4",
+    "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.1.7"
+    "react-icons": "^5.5.0",
+    "react-qrcode-logo": "^3.0.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.9"
   }
 }
