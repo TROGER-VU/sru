@@ -2,13 +2,13 @@
 
 "use client";
 
-import Landing from './pages/landing';
-import Profile from './pages/Profile';
 
 const MyApp = () => {
   return (
     <>
-      <Profile/>
+    {/* <Signup/> */}
+      {/* <Login/> */}
+      {/* <Profile/> */}
     </>
   );
 };
