@@ -1,7 +1,8 @@
 import { getServerSession } from "next-auth";; // Adjust path if needed
 import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
-import { authOptions } from "../app/api/auth/[...nextauth]";
+import { authOptions } from "../app/api/auth/[...nextauth]/route";
+// import { authOptions } from "../app/api/auth/[...nextauth]";
 
 export const getDataFromToken = async (request: NextRequest) => {
     try {
