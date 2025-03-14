@@ -1,10 +1,19 @@
 "use client";
-import { useState } from "react";
+
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}
+
+function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const router = useRouter();
@@ -28,7 +37,10 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#E8F5E9] px-4 py-8">
-      <div className="w-full max-w-sm p-6 bg-white rounded-2xl shadow-xl flex flex-col gap-4" style={{ padding: "10px" }}>
+      <div
+        className="w-full max-w-sm p-6 bg-white rounded-2xl shadow-xl flex flex-col gap-4"
+        style={{ padding: "10px" }}
+      >
         <h2 className="text-xl font-bold text-center text-[#388E3C]">Set New Password</h2>
         <input
           type="password"
