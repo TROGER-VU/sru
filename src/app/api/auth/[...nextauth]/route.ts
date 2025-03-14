@@ -1,46 +1,47 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import User from "../../../../models/userModel";
 import { connect } from "../../../../dbConfig/dbConfig";
+import User from "../../../../models/userModel";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
+          await connect(); // Ensure DB connection is established
 
-          await connect();
-          
           let existingUser = await User.findOne({ email: user.email });
-          
+
           if (!existingUser) {
             existingUser = new User({
               fullName: user.name,
               email: user.email,
               googleId: account.providerAccountId, 
               mobileNumber: "Not Provided", 
-              password: "GoogleOAuth",
+              password: "GoogleOAuth", 
             });
-            
+
             await existingUser.save();
-            console.log("New Google user saved!");
+            console.log("✅ New Google user saved!");
+          } else {
+            console.log("🔹 Existing Google user found:", existingUser.email);
           }
-  
-          return true;
+
+          return true; // Allow login
         } catch (error) {
-          console.error("Error while creating user:", error);
-          throw new Error("Error while creating user");
+          console.error("❌ Error during Google sign-in:", error);
+          return false; // Block login if error occurs
         }
       }
-      return true;
+      return true; // Default return for other providers
     },
-  },  
+  },
 };
 
 const handler = NextAuth(authOptions);
