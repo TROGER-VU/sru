@@ -8,13 +8,16 @@ export async function GET(req: NextRequest) {
         await connect(); // Ensure DB connection
 
         // Extract user ID from token
-        const userId = getDataFromToken(req);
-        if (!userId) {
-            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+        const { id, email, source } = await getDataFromToken(req);
+
+        let user;
+        if (source === "google") {
+            user = await User.findOne({ email }).select("-password");
+        } else {
+            user = await User.findOne({ _id: id }).select("-password");
         }
 
         // Find user in the database
-        const user = await User.findById(userId);
         if (!user) {
             return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
         }

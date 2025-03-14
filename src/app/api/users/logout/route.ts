@@ -12,6 +12,10 @@ export async function GET() {
             httpOnly: true,
             expires: new Date(0)
         })
+        response.cookies.set("next-auth.session-token", "", {
+            httpOnly: true,
+            expires: new Date(0)
+        })
         return response;
     } catch (error: any) {
         return NextResponse.json({error: error.message},

@@ -12,6 +12,7 @@ interface IUser extends Document {
   forgotPasswordTokenExpiry?: Date;
   verifyToken?: string;
   verifyTokenExpiry?: Date;
+  googleId: string;
   scanHistory?: Array<{
     timestamp: Date;
     points: number;
@@ -24,6 +25,9 @@ const userSchema = new mongoose.Schema<IUser>({
   fullName: {
     type: String,
     required: [true, "Please provide Full name"],
+    trim: true,
+    minlength: 3,
+    maxlength: 30,
   },
   email: {
     type: String,
@@ -34,10 +38,13 @@ const userSchema = new mongoose.Schema<IUser>({
     type: String,
     required: [true, "Please provide Mobile Number"],
     unique: true,
+    maxlength: 10,
+    minlength: 10,
   },
   password: {
     type: String,
     required: [true, "Please provide Password"],
+    minlength: 8,
   },
   points: {
     type: Number,
@@ -50,6 +57,11 @@ const userSchema = new mongoose.Schema<IUser>({
   isAdmin: {
     type: Boolean,
     default: false,
+  },
+  googleId: { 
+    type: String, 
+    unique: true, 
+    sparse: true 
   },
   forgotPasswordToken: String,
   forgotPasswordTokenExpiry: Date,

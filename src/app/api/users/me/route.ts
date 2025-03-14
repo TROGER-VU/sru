@@ -4,18 +4,31 @@ import User from "../../../../models/userModel";
 import { connect } from "../../../../dbConfig/dbConfig";
 
 connect();
-export async function GET(request:NextRequest) {
+
+export async function GET(request: NextRequest) {
     try {
-        const userId = await getDataFromToken(request);
-        const user = await User.findOne({_id: userId}).select("-password");
+        const { id, email, source } = await getDataFromToken(request);
+
+        let user;
+        if (source === "google") {
+            user = await User.findOne({ email }).select("-password");
+        } else {
+            user = await User.findOne({ _id: id }).select("-password");
+        }
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
         return NextResponse.json({
             message: "User found",
-            data: user
-        })
+            data: user,
+        });
+
     } catch (error: any) {
-        return NextResponse.json({error: error.message},
-            {status: 400}
+        return NextResponse.json(
+            { error: error.message },
+            { status: 400 }
         );
     }
-    
 }

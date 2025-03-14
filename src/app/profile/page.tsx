@@ -27,14 +27,16 @@ export default function ProfilePage() {
     };
 
     const getUserDetails = async () => {
-        try {
-            const res = await axios.get('/api/users/me');
-            setUserData(res.data.data);
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to fetch user data");
-        }
-    };
+    try {
+        const res = await axios.get("/api/users/me", {
+            withCredentials: true,  
+        });
+        setUserData(res.data.data);
+    } catch (error) {
+        console.error(error);
+        toast.error("Failed to fetch user data");
+    }
+};
 
     return (
         <div className="flex items-center justify-center min-h-screen p-6 bg-gradient-to-b from-green-100 to-green-300">
@@ -81,6 +83,9 @@ export default function ProfilePage() {
                         View Recycling History
                     </button>
                 </Link>
+                <p className={"text-xs text-gray-500 text-center w-8/10"} style={{ marginBottom: "10px" }}>
+        Need assistance? Contact us at: <strong> smartrecyclingunit@gmail.com </strong>
+        </p>
                 {/* <div className="mt-4">
                     <h3 className="text-lg font-bold text-gray-700">Recent Recycling Activity</h3>
                     {userData?.history?.length > 0 ? (

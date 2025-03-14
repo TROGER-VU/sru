@@ -7,25 +7,41 @@ export async function POST(req: NextRequest) {
     try {
         await connect(); // Ensure DB connection
 
-        // Extract user ID from token
-        const userId = getDataFromToken(req);
-        if (!userId) {
-            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+        // Extract user ID from token (✅ Fixed missing await)
+        const { id, email, source } = await getDataFromToken(req);
+
+        let user;
+        if (source === "google") {
+            user = await User.findOne({ email }).select("-password");
+        } else {
+            user = await User.findOne({ _id: id }).select("-password");
         }
 
-        const { qrCode } = await req.json(); // Extract QR Code from request body
+        // Parse request body safely
+        let qrCode;
+        try {
+            const body = await req.json();
+            qrCode = body.qrCode;
+        } catch (error) {
+            return NextResponse.json({ success: false, message: "Invalid JSON body" }, { status: 400 });
+        }
+
         if (!qrCode) {
             return NextResponse.json({ success: false, message: "QR Code is required" }, { status: 400 });
         }
 
         // Find user in the database
-        const user = await User.findById(userId);
         if (!user) {
             return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
         }
 
+        // Ensure scanHistory is initialized
+        if (!user.scanHistory) {
+            user.scanHistory = [];
+        }
+
         // Update points and log history
-        user.points += 1; // Increase points per scan
+        user.points = (user.points || 0) + 1; // ✅ Handle undefined points
         user.scanHistory.push({
             timestamp: new Date(),
             points: 1,
@@ -34,6 +50,7 @@ export async function POST(req: NextRequest) {
         await user.save();
 
         return NextResponse.json({ success: true, points: user.points }, { status: 200 });
+
     } catch (error) {
         console.error("Error scanning QR:", error);
         return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });

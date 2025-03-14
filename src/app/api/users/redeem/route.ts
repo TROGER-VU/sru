@@ -7,15 +7,15 @@ import crypto from "crypto";
 export async function POST(req: NextRequest) {
     try {
         await connect(); // Ensure DB connection
+        const { id, email, source } = await getDataFromToken(req);
 
-        // Extract user ID from token
-        const userId = getDataFromToken(req);
-        if (!userId) {
-            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+        let user;
+        if (source === "google") {
+            user = await User.findOne({ email }).select("-password");
+        } else {
+            user = await User.findOne({ _id: id }).select("-password");
         }
-
-        // Find user in the database
-        const user = await User.findById(userId);
+        
         if (!user) {
             return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
         }
@@ -35,13 +35,14 @@ export async function POST(req: NextRequest) {
         // Log redemption event in history
         user.scanHistory.push({
             timestamp: new Date(),
-            points: -user.points, // Deducted points
+            points: -100, // Deducted points
             code: redemptionCode,
             expiry: expiryDate
         });
 
         // Reset user's points to zero
-        user.points = 0;
+        user.points = user.points - 100;
+        console.log(user.points);
 
         await user.save();
 

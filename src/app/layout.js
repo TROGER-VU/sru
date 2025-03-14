@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import SessionWrapper from "./component/SessionWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,9 +23,11 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/logo.jpg" type="image/x-icon"/>
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-      </body>
+      <SessionWrapper>
+        <body className={`${geistSans.variable} ${geistMono.variable}`}>
+          {children}
+        </body>
+      </SessionWrapper>
     </html>
   );
 }
