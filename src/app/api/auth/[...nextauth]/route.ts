@@ -1,13 +1,15 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import User from "../../../../models/userModel";
 import { connect } from "../../../../dbConfig/dbConfig";
+import User from "../../../../models/userModel";
+// import User from "@/models/userModel"; 
+// import { connect } from "@/dbConfig/dbConfig"; 
 
-export const authOptions = {
+const handler = NextAuth({
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
   callbacks: {
@@ -15,7 +17,6 @@ export const authOptions = {
       if (account?.provider === "google") {
         try {
           await connect();
-
           let existingUser = await User.findOne({ email: user.email });
 
           if (!existingUser) {
@@ -30,7 +31,6 @@ export const authOptions = {
             await existingUser.save();
             console.log("New Google user saved!");
           }
-
           return true;
         } catch (error) {
           console.error("Error while creating user:", error);
@@ -40,8 +40,6 @@ export const authOptions = {
       return true;
     },
   },
-};
-
-const handler = NextAuth(authOptions);
+});
 
 export { handler as GET, handler as POST };
