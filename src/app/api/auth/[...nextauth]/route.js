@@ -14,24 +14,23 @@ export const authOptions = {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
-
           await connect();
-          
+
           let existingUser = await User.findOne({ email: user.email });
-          
+
           if (!existingUser) {
             existingUser = new User({
               fullName: user.name,
               email: user.email,
-              googleId: account.providerAccountId, 
-              mobileNumber: "Not Provided", 
+              googleId: account.providerAccountId,
+              mobileNumber: "Not Provided",
               password: "GoogleOAuth",
             });
-            
+
             await existingUser.save();
             console.log("New Google user saved!");
           }
-  
+
           return true;
         } catch (error) {
           console.error("Error while creating user:", error);
@@ -40,7 +39,7 @@ export const authOptions = {
       }
       return true;
     },
-  },  
+  },
 };
 
 const handler = NextAuth(authOptions);
