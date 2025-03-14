@@ -1,8 +1,8 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { NextRequest, NextResponse } from "next/server"; // ✅ Import Next.js request/response types
-import { connect } from "../../../../dbConfig/dbConfig";
-import User from "../../../../models/userModel";
+import { connect } from "../../../dbConfig/dbConfig";
+import User from "../../../models/userModel";
 
 export const authOptions: NextAuthOptions = {
   providers: [
