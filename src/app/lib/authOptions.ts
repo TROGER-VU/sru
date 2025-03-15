@@ -11,6 +11,9 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  session: {
+    strategy: "jwt", // ✅ Use JWT sessions instead of database sessions
+  },
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {

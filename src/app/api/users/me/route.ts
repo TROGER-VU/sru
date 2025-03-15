@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
     try {
         // Extract user data from the token
         const tokenData = await getDataFromToken(request);
+        console.log(tokenData);
 
         if (!tokenData) {
             return NextResponse.json({ error: "Unauthorized: No valid token" }, { status: 401 });
