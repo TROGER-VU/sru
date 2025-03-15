@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { connect } from "../../../../dbConfig/dbConfig";
 import User from "../../../../models/userModel";
 
-const handler = NextAuth({
+export const authOptions = {  // ✅ Export authOptions
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -38,6 +38,8 @@ const handler = NextAuth({
       return true;
     },
   },
-});
+};
+
+const handler = NextAuth(authOptions); // ✅ Use authOptions
 
 export { handler as GET, handler as POST };

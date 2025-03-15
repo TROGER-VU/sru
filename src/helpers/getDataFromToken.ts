@@ -1,13 +1,12 @@
 import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
-
-// ✅ No need to import authOptions anymore
+import { authOptions } from "../app/api/auth/[...nextauth]/route";
 
 export const getDataFromToken = async (request: NextRequest) => {
     try {
         // 1️⃣ **Check if the user is logged in via NextAuth (Google Sign-In)**
-        const session = await getServerSession();
+        const session = await getServerSession(authOptions); // ✅ Pass `authOptions`
         if (session?.user?.email) {
             console.log("✅ Google Auth Session User:", session.user);
             return { email: session.user.email, source: "google" };
@@ -15,7 +14,9 @@ export const getDataFromToken = async (request: NextRequest) => {
 
         // 2️⃣ **Check for a JWT token (Normal Login)**
         const token =
-            request.cookies.get("token")?.value || request.cookies.get("next-auth.session-token")?.value || request.cookies.get("__Secure-next-auth.session-token")?.value ||""; // Cookie token
+            request.cookies.get("token")?.value ||
+            request.cookies.get("next-auth.session-token")?.value ||
+            request.cookies.get("__Secure-next-auth.session-token")?.value || ""; // Cookie token
 
         if (!token) {
             throw new Error("No authentication token found");
