@@ -1,12 +1,12 @@
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth"; // ✅ Import from lib/authOptions
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
-import { authOptions } from "../app/api/auth/[...nextauth]/route";
+import { authOptions } from "../app/lib/authOptions";
 
 export const getDataFromToken = async (request: NextRequest) => {
     try {
         // 1️⃣ **Check if the user is logged in via NextAuth (Google Sign-In)**
-        const session = await getServerSession(authOptions); // ✅ Pass `authOptions`
+        const session = await getServerSession(authOptions); // ✅ Now it works correctly
         if (session?.user?.email) {
             console.log("✅ Google Auth Session User:", session.user);
             return { email: session.user.email, source: "google" };
