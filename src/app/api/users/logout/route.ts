@@ -19,6 +19,7 @@ export async function GET() {
         // ✅ Properly remove cookies
         response.cookies.delete("token");
         response.cookies.delete("next-auth.session-token");
+        response.cookies.delete("__Secure-next-auth.session-token");
 
         return response;
     } catch (error: any) {

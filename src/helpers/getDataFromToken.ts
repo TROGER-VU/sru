@@ -15,7 +15,7 @@ export const getDataFromToken = async (request: NextRequest) => {
 
         // 2️⃣ **Check for a JWT token (Normal Login)**
         const token =
-            request.cookies.get("token")?.value || request.cookies.get("next-auth.session-token")?.value ||""; // Cookie token
+            request.cookies.get("token")?.value || request.cookies.get("next-auth.session-token")?.value || request.cookies.get("__Secure-next-auth.session-token")?.value ||""; // Cookie token
 
         if (!token) {
             throw new Error("No authentication token found");
