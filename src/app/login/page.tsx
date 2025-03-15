@@ -7,10 +7,15 @@ import toast from "react-hot-toast";
 import Image from "next/image";
 import { signIn, useSession } from "next-auth/react";
 
+interface UserCredentials {
+  email: string;
+  password?: string;
+}
+
 export default function LoginPage() {
   const router = useRouter();
-  const { data: session } = useSession();
-  const [user, setUser] = useState({ email: "", password: "" });
+  // const { data: session } = useSession();
+  const [user, setUser] = useState<UserCredentials>({ email: "", password: "" });
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -19,27 +24,37 @@ export default function LoginPage() {
     setButtonDisabled(!(user.email.length > 0 && user.password.length > 0));
   }, [user]);
 
-  useEffect(() => {
-    if (session || true) {
-      toast.success("Login successful!");
-      router.push("/profile"); // Redirect after Google login
-    }
-  }, [session, router]);
+  // useEffect(() => {
+  //   if (session) {
+  //     toast.success("Login successful!");
+  //     router.push("/profile"); // Redirect after Google login
+  //   }
+  // }, [session, router]);
 
   const onLogin = async () => {
     try {
-      setLoading(true);
-      const response = await axios.post("/api/users/login", user);
-      console.log("Login success", response.data);
-      toast.success("Login success");
-      router.push("/profile");
+        setLoading(true);
+        const result = await signIn("credentials", {
+            redirect: false,
+            email: user.email,
+            password: user.password,
+        });
+
+        if (result?.error) {
+            toast.error(result.error);
+            console.log("Login Failed", result.error);
+        } else {
+            toast.success("Login success");
+            router.push("/profile");
+            console.log("Login success");
+        }
     } catch (error: any) {
-      console.log("Login Failed", error.message);
-      toast.error(error.message);
+        toast.error(error.message);
+        console.log("Login Failed", error.message);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#E8F5E9] px-4 py-8">

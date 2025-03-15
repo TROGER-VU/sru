@@ -5,25 +5,31 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { signOut, useSession } from "next-auth/react";
 
 export default function ProfilePage() {
+    // const { data: session } = useSession();
     const router = useRouter();
     const [userData, setUserData] = useState(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+
+    // useEffect(() => {
+    //     if (!session) {
+    //       router.push("/login");
+    //     }
+    //   }, [session, router]);
+    
+    //   if (!session) {
+    //     return null;
+    //   }
 
     useEffect(() => {
         getUserDetails();
     }, []);
 
     const logout = async () => {
-        try {
-            await axios.get('/api/users/logout');
-            toast.success("Logout successful");
-            router.push('/login');
-        } catch (error) {
-            console.log(error.message);
-            toast.error(error.message);
-        }
+        await signOut();
+        router.push('/login');
     };
 
     const getUserDetails = async () => {

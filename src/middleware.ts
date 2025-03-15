@@ -1,30 +1,25 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
- 
-// This function can be marked `async` if using `await` inside
-export function middleware(request: NextRequest) {
-    const path = request.nextUrl.pathname
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
-    const isPublicPath = path === '/login' || path === '/signup'
-    const token = request.cookies.get('next-auth.session-token')?.value || request.cookies.get('token')?.value || request.cookies.get('__Secure-next-auth.session-token')?.value || ''
+export async function middleware(request: NextRequest) {
+    const path = request.nextUrl.pathname;
 
-    if(isPublicPath && token) {
-        return NextResponse.redirect(new URL('/profile', request.nextUrl))
+    const isPublicPath = path === '/login' || path === '/signup';
+
+    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+
+    if (isPublicPath && token) {
+        return NextResponse.redirect(new URL('/profile', request.nextUrl));
     }
 
-    if(!isPublicPath && !token) {
-        return NextResponse.redirect(new URL('/login', request.nextUrl))
+    if (!isPublicPath && !token) {
+        return NextResponse.redirect(new URL('/login', request.nextUrl));
     }
 
-
+    return NextResponse.next(); // Important: Continue the request if no redirect is needed
 }
- 
-// See "Matching Paths" below to learn more
+
 export const config = {
-  matcher: [
-    '/',
-    '/profile',
-    '/login',
-    '/signup',
-  ],
-}
+    matcher: ['/', '/profile', '/login', '/signup'],
+};
