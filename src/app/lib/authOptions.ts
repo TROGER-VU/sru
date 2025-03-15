@@ -59,7 +59,7 @@ export const authOptions: NextAuthOptions = {
                             email: user.email,
                             googleId: account.providerAccountId,
                             mobileNumber: "Not Needed",
-                            password: "GoogleOAuth",
+                            password: "GoogleOAuth21",
                         });
 
                         await existingUser.save();
