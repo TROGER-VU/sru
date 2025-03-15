@@ -8,13 +8,23 @@ export async function POST(req: NextRequest) {
         await connect(); // Ensure DB connection
 
         // Extract user ID from token (✅ Fixed missing await)
-        const { id, email, source } = await getDataFromToken(req);
+        const tokenData = await getDataFromToken(req);
+        if (!tokenData) {
+            return NextResponse.json({ error: "Unauthorized: No valid token" }, { status: 401 });
+        }
 
+        const { id, email, source } = tokenData;
+
+        // Find user in the database before parsing the request body
         let user;
         if (source === "google") {
             user = await User.findOne({ email }).select("-password");
         } else {
             user = await User.findOne({ _id: id }).select("-password");
+        }
+
+        if (!user) {
+            return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
         }
 
         // Parse request body safely
@@ -30,15 +40,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: "QR Code is required" }, { status: 400 });
         }
 
-        // Find user in the database
-        if (!user) {
-            return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
-        }
-
         // Ensure scanHistory is initialized
-        if (!user.scanHistory) {
-            user.scanHistory = [];
-        }
+        user.scanHistory = user.scanHistory || [];
 
         // Update points and log history
         user.points = (user.points || 0) + 1; // ✅ Handle undefined points

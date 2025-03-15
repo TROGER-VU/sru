@@ -24,7 +24,7 @@ const handler = NextAuth({
               fullName: user.name,
               email: user.email,
               googleId: account.providerAccountId,
-              mobileNumber: "Not Provided",
+              mobileNumber: "Not Needed",
               password: "GoogleOAuth",
             });
 

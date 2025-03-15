@@ -7,17 +7,24 @@ connect();
 
 export async function GET(request: NextRequest) {
     try {
-        const { id, email, source } = await getDataFromToken(request);
+        // Extract user data from the token
+        const tokenData = await getDataFromToken(request);
+
+        if (!tokenData) {
+            return NextResponse.json({ error: "Unauthorized: No valid token" }, { status: 401 });
+        }
+
+        const { id, email, source } = tokenData;
 
         let user;
         if (source === "google") {
-            user = await User.findOne({ email }).select("-password");
+            user = await User.findOne({ email }).select("-password").lean();
         } else {
-            user = await User.findOne({ _id: id }).select("-password");
+            user = await User.findById(id).select("-password").lean();
         }
 
         if (!user) {
-            throw new Error("User not found");
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
         return NextResponse.json({
@@ -26,9 +33,10 @@ export async function GET(request: NextRequest) {
         });
 
     } catch (error: any) {
+        console.error("❌ Error fetching user:", error.message);
         return NextResponse.json(
-            { error: error.message },
-            { status: 400 }
+            { error: "Internal Server Error" },
+            { status: 500 }
         );
     }
 }

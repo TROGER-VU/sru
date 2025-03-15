@@ -7,7 +7,14 @@ import crypto from "crypto";
 export async function POST(req: NextRequest) {
     try {
         await connect(); // Ensure DB connection
-        const { id, email, source } = await getDataFromToken(req);
+        
+        const tokenData = await getDataFromToken(req);
+
+        if (!tokenData) {
+            return NextResponse.json({ error: "Unauthorized: No valid token" }, { status: 401 });
+        }
+
+        const { id, email, source } = tokenData;
 
         let user;
         if (source === "google") {

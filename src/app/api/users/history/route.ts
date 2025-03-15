@@ -8,7 +8,14 @@ export async function GET(req: NextRequest) {
         await connect(); // Ensure DB connection
 
         // Extract user ID from token
-        const { id, email, source } = await getDataFromToken(req);
+        
+        const tokenData = await getDataFromToken(req);
+
+        if (!tokenData) {
+            return NextResponse.json({ error: "Unauthorized: No valid token" }, { status: 401 });
+        }
+
+        const { id, email, source } = tokenData;
 
         let user;
         if (source === "google") {

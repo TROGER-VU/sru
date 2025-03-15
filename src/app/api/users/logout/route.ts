@@ -2,30 +2,29 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
     try {
-        const response = NextResponse.json({
-            message: "Logout successful",
-            success: true,
-        });
+        // Create a new response instance
+        const response = new NextResponse(
+            JSON.stringify({
+                message: "Logout successful",
+                success: true,
+            }),
+            {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
-        // Correct way to clear cookies
-        response.cookies.set("token", "", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            expires: new Date(0),
-            path: "/", // Clears cookie for the entire app
-        });
-
-        response.cookies.set("next-auth.session-token", "", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            expires: new Date(0),
-            path: "/", // Clears session cookie properly
-        });
+        // ✅ Properly remove cookies
+        response.cookies.delete("token");
+        response.cookies.delete("next-auth.session-token");
 
         return response;
     } catch (error: any) {
+        console.error("❌ Logout Error:", error.message);
         return NextResponse.json(
-            { error: error.message },
+            { error: "Internal Server Error" },
             { status: 500 }
         );
     }
