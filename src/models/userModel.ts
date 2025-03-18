@@ -36,14 +36,12 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   mobileNumber: {
     type: String,
-    required: [true, "Please provide Mobile Number"],
     unique: true,
     maxlength: 10,
     minlength: 10,
   },
   password: {
     type: String,
-    required: [true, "Please provide Password"],
     minlength: 8,
   },
   points: {

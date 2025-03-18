@@ -51,15 +51,14 @@ export const authOptions: NextAuthOptions = {
             if (account?.provider === "google") {
                 try {
                     await connect();
-                    let existingUser = await User.findOne({ email: user.email });
+                    let existingUser = await User.findOne({ googleId: account.providerAccountId }); // Check for existing user by googleId
 
                     if (!existingUser) {
                         existingUser = new User({
                             fullName: user.name,
                             email: user.email,
                             googleId: account.providerAccountId,
-                            mobileNumber: "Not Needed",
-                            password: "GoogleOAuth21",
+                            // mobileNumber and password are removed
                         });
 
                         await existingUser.save();

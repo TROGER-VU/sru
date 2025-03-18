@@ -1,16 +1,12 @@
-// pages/_app.js
+import { Toaster } from 'react-hot-toast';
 
-"use client";
-
-
-const MyApp = () => {
+function MyApp({ Component, pageProps }) {
   return (
     <>
-    {/* <Signup/> */}
-      {/* <Login/> */}
-      {/* <Profile/> */}
+      <Component {...pageProps} />
+      <Toaster />
     </>
   );
-};
+}
 
 export default MyApp;
