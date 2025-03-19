@@ -1,3 +1,5 @@
+// /api/users/signup.ts (or .js)
+
 import { connect } from "../../../../dbConfig/dbConfig";
 import User from "../../../../models/userModel";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,15 +10,20 @@ connect();
 export async function POST(request: NextRequest) {
     try {
         const reqBody = await request.json();
-        const { fullName, email, mobileNumber, password } = reqBody;
+        const { fullName, email, mobileNumber, password, source } = reqBody;
 
-        // Input validation (Example using basic checks)
-        if (!fullName || !email || !password || !mobileNumber) {
+        // Input validation
+        if (!fullName || !email || !password) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
-        if(password.length < 7){
-            return NextResponse.json({error: "Password must be at least 8 characters long"}, {status: 400})
+        if (password.length < 8) {
+            return NextResponse.json({ error: "Password must be at least 8 characters long" }, { status: 400 });
+        }
+
+        // Validate mobileNumber for credential signups (not Google)
+        if (source !== "google" && !mobileNumber) {
+            return NextResponse.json({ error: "Mobile number is required for credential signups" }, { status: 400 });
         }
 
         // Check if user already exists
@@ -45,12 +52,11 @@ export async function POST(request: NextRequest) {
                 success: true,
                 savedUser,
             },
-            { status: 201 } // Use 201 Created status code
+            { status: 201 }
         );
     } catch (error: any) {
-        console.error("❌ Registration Error:", error); // Log the full error object
+        console.error("❌ Registration Error:", error);
         if (error.name === "ValidationError") {
-            // Handle Mongoose validation errors
             return NextResponse.json({ error: error.message }, { status: 400 });
         }
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema<IUser>({
     type: String,
     maxlength: 10,
     minlength: 10,
+    unique: true,
   },
   password: {
     type: String,

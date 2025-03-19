@@ -58,6 +58,7 @@ export const authOptions: NextAuthOptions = {
                             fullName: user.name,
                             email: user.email,
                             googleId: account.providerAccountId,
+                            mobileNumber: `google_${account.providerAccountId}`.slice(0, 10),
                             // mobileNumber and password are removed
                         });
 
