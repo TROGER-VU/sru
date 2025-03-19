@@ -20,27 +20,22 @@ export const authOptions: NextAuthOptions = {
                     await connect();
                     const user = await User.findOne({ email: credentials.email });
 
-                    if (!user) {
-                        return null; // User not found
-                    }
+                    if (!user) return null; // User not found
 
                     const isPasswordMatch = await bcryptjs.compare(credentials.password, user.password);
+                    if (!isPasswordMatch) return null; // Incorrect password
 
-                    if (isPasswordMatch) {
-                        return {
-                            id: user._id.toString(), // Assuming your User model uses _id
-                            email: user.email,
-                            name: user.fullName,
-                        };
-                    } else {
-                        return null; // Incorrect password
-                    }
+                    return {
+                        id: user._id.toString(),
+                        email: user.email,
+                        name: user.fullName,
+                    };
                 } catch (error: any) {
                     console.error("Error during credentials login:", error);
-                    return null; // Handle error appropriately
+                    return null;
                 }
             },
-            credentials: undefined
+            credentials: undefined,
         }),
     ],
     session: {
@@ -48,30 +43,32 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         async signIn({ user, account }) {
-            if (account?.provider === "google") {
-                try {
-                    await connect();
-                    let existingUser = await User.findOne({ googleId: account.providerAccountId }); // Check for existing user by googleId
+            try {
+                await connect();
+                let existingUser = await User.findOne({ email: user.email });
 
-                    if (!existingUser) {
-                        existingUser = new User({
-                            fullName: user.name,
-                            email: user.email,
-                            googleId: account.providerAccountId,
-                            mobileNumber: `google_${account.providerAccountId}`.slice(0, 10),
-                            // mobileNumber and password are removed
-                        });
-
-                        await existingUser.save();
-                        console.log("New Google user saved!");
-                    }
-                    return true;
-                } catch (error) {
-                    console.error("Error while creating user:", error);
-                    throw new Error("Error while creating user");
+                if (!existingUser) {
+                    // New Google User → Create a new record
+                    existingUser = new User({
+                        fullName: user.name,
+                        email: user.email,
+                        googleId: account?.providerAccountId,
+                        mobileNumber: `google_${account?.providerAccountId}`.slice(0, 10),
+                    });
+                    await existingUser.save();
+                    console.log("✅ New Google user saved!");
+                } else if (!existingUser.googleId) {
+                    // Existing user (registered via email/password) logging in via Google
+                    existingUser.googleId = account?.providerAccountId;
+                    await existingUser.save();
+                    console.log("✅ Google login linked to existing account!");
                 }
+
+                return true;
+            } catch (error) {
+                console.error("❌ Error during Google login:", error);
+                return false;
             }
-            return true;
         },
     },
 };

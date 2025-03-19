@@ -20,6 +20,7 @@ export default function ScanPage() {
             );
             alert("Scanned successfully! Points updated.");
             router.push("/profile");
+            router.refresh();
         } catch (error) {
             console.error("Error updating points:", error);
             alert(error?.response?.data?.message || "Failed to update points.");
