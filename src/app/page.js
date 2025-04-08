@@ -2,13 +2,12 @@
 
 "use client";
 
+import ProfilePage from "./profile/page";
 
 const MyApp = () => {
   return (
     <>
-    {/* <Signup/> */}
-      {/* <Login/> */}
-      {/* <Profile/> */}
+    <ProfilePage/>
     </>
   );
 };

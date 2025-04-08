@@ -3,25 +3,47 @@ import bcrypt from "bcryptjs";
 import { connect } from "../../../../dbConfig/dbConfig";
 import User from "../../../../models/userModel";
 
+connect();
+
 export async function POST(req: Request) {
-  await connect();
-  const { token, password } = await req.json();
+    try {
+        const { token, password } = await req.json();
 
-  if (!token || !password) return NextResponse.json({ message: "Invalid request" }, { status: 400 });
+        if (!token || !password) {
+            return NextResponse.json({ message: "Invalid request" }, { status: 400 });
+        }
 
-  // Find user with token
-  const user = await User.findOne({ forgotPasswordToken: token, forgotPasswordTokenExpiry: { $gt: new Date() } });
+        // Find user with token
+        const user = await User.findOne({
+            forgotPasswordToken: token,
+            forgotPasswordTokenExpiry: { $gt: new Date() },
+        });
 
-  if (!user) return NextResponse.json({ message: "Invalid or expired token" }, { status: 400 });
+        if (!user) {
+            // Token is invalid or expired
+            // Check if token exists at all and if it is expired, remove it.
+            const expiredUser = await User.findOne({forgotPasswordToken: token});
+            if (expiredUser) {
+                expiredUser.forgotPasswordToken = undefined;
+                expiredUser.forgotPasswordTokenExpiry = undefined;
+                await expiredUser.save();
+            }
 
-  // Hash new password
-  const hashedPassword = await bcrypt.hash(password, 10);
+            return NextResponse.json({ message: "Invalid or expired token" }, { status: 400 });
+        }
 
-  // Update password and clear token
-  user.password = hashedPassword;
-  user.forgotPasswordToken = undefined;
-  user.forgotPasswordTokenExpiry = undefined;
-  await user.save();
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-  return NextResponse.json({ message: "Password reset successful!" });
+        // Update password and clear token
+        user.password = hashedPassword;
+        user.forgotPasswordToken = undefined;
+        user.forgotPasswordTokenExpiry = undefined;
+        await user.save();
+
+        return NextResponse.json({ message: "Password reset successful!" }, { status: 200 });
+    } catch (error: any) {
+        console.error("❌ Password reset error:", error);
+        return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    }
 }
