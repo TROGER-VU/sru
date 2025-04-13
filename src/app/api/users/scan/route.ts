@@ -5,9 +5,10 @@ import User from "../../../../models/userModel";
 
 export async function POST(req: NextRequest) {
     try {
-        await connect(); // Ensure DB connection
+        console.log("⏳ Connecting to DB...");
+        await connect();
 
-        // Extract user ID from token (✅ Fixed missing await)
+        console.log("🔐 Extracting token...");
         const tokenData = await getDataFromToken(req);
         if (!tokenData) {
             return NextResponse.json({ error: "Unauthorized: No valid token" }, { status: 401 });
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
 
         const { id, email, source } = tokenData;
 
-        // Find user in the database before parsing the request body
+        console.log("🔍 Looking up user...");
         let user;
         if (source === "google") {
             user = await User.findOne({ email }).select("-password");
@@ -24,38 +25,47 @@ export async function POST(req: NextRequest) {
         }
 
         if (!user) {
+            console.log("❌ User not found");
             return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
         }
 
-        // Parse request body safely
+        console.log("📦 Parsing request body...");
         let qrCode;
         try {
             const body = await req.json();
             qrCode = body.qrCode;
-        } catch (error) {
+        } catch (err) {
+            console.error("⚠️ Failed to parse JSON:", err);
             return NextResponse.json({ success: false, message: "Invalid JSON body" }, { status: 400 });
         }
 
         if (!qrCode) {
+            console.log("❌ No QR code provided");
             return NextResponse.json({ success: false, message: "QR Code is required" }, { status: 400 });
         }
 
-        // Ensure scanHistory is initialized
+        console.log("✅ QR code received:", qrCode);
+
+        // Default field fallback
+        user.points = user.points || 0;
         user.scanHistory = user.scanHistory || [];
 
-        // Update points and log history
-        user.points = (user.points || 0) + 1; // ✅ Handle undefined points
+        console.log("➕ Updating user points and scanHistory...");
+        user.points += 1;
         user.scanHistory.push({
             timestamp: new Date(),
             points: 1,
+            company: "SRU",   // or null if optional
+            label: "Scan Reward",
         });
 
         await user.save();
+        console.log("✅ User updated and saved!");
 
         return NextResponse.json({ success: true, points: user.points }, { status: 200 });
 
     } catch (error) {
-        console.error("Error scanning QR:", error);
+        console.error("🔥 Unexpected error during scan:", error);
         return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });
     }
 }

@@ -15,6 +15,8 @@ interface IUser extends Document {
   googleId: string;
   scanHistory?: Array<{
     timestamp: Date;
+    company?: string;
+    label?: string;
     points: number;
     code?: string;
     expiry?: Date;
@@ -68,7 +70,9 @@ const userSchema = new mongoose.Schema<IUser>({
   scanHistory: [
     {
       timestamp: { type: Date, default: Date.now },
-      points: { type: Number, required: true },
+      company: { type: String }, 
+      label: { type: String },
+      points: { type: Number, required: true},
       code: { type: String },
       expiry: { type: Date },
     },

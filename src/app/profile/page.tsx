@@ -73,9 +73,9 @@ export default function ProfilePage() {
                 </div>
                 <Link href="/redeem">
                     <button 
-                        className={`w-4/5 rounded-lg font-bold py-2 ${userData?.points < 100 ? "bg-orange-500 text-white cursor-not-allowed" : "bg-orange-500 text-white hover:bg-orange-600 cursor-pointer"}`} 
+                        className={`w-4/5 rounded-lg font-bold py-2 ${userData?.points < 1 ? "bg-orange-500 text-white cursor-not-allowed" : "bg-orange-500 text-white hover:bg-orange-600 cursor-pointer"}`} 
                         style={{margin:"15px 20px 20px 20px", padding:"10px"}} 
-                        disabled={userData?.points < 100}>
+                        disabled={userData?.points < 1}>
                         REDEEM FOR ECO PRODUCTS
                     </button>
                 </Link>
