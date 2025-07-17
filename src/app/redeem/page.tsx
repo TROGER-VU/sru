@@ -12,10 +12,10 @@ const Redeem = () => {
 
     const offers = [
         { points: 1, label: "5% Off", company: "SAMOCHA", logo: "/Samocha_Logo.png" },
-        { points: 2, label: "1 Free chai (on order above Rs.50)", company: "SAMOCHA", logo: "/Samocha_Logo.png" },
-        { points: 5, label: "1 Free Vada pav / Maggi (on order above Rs.99)", company: "SAMOCHA", logo: "/Samocha_Logo.png" },
-        { points: 10, label: "1 Free pasta (on order above Rs.99)", company: "SAMOCHA", logo: "/Samocha_Logo.png" },
-        { points: 1, label: "10% Off (on order above Rs.299)", company: "The Food Chariot Company", logo: "/tfcc.png" },
+        { points: 1, label: "1 Free chai (on order above Rs.50)", company: "SAMOCHA", logo: "/Samocha_Logo.png" },
+        { points: 1, label: "1 Free Vada pav / Maggi (on order above Rs.99)", company: "SAMOCHA", logo: "/Samocha_Logo.png" },
+        { points: 2, label: "1 Free pasta (on order above Rs.99)", company: "SAMOCHA", logo: "/Samocha_Logo.png" },
+        { points: 2, label: "10% Off (on order above Rs.299)", company: "The Food Chariot Company", logo: "/tfcc.png" },
         { points: 1, label: "10% Off", company: "SOULO", logo: "/s_logo.png" },
     ];
 
