@@ -41,7 +41,7 @@ export default function LoginPage() {
         });
 
         if (result?.error) {
-            toast.error(result.error);
+            toast.error("Login Failed");
             console.log("Login Failed", result.error);
         } else {
             toast.success("Login success");

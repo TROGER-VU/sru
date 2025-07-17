@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Scanner } from "@yudiel/react-qr-scanner";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function ScanPage() {
     const router = useRouter();
@@ -18,12 +19,12 @@ export default function ScanPage() {
                 { qrCode: decodedText }, // Send only QR code, no need for token
                 { withCredentials: true } // Ensure cookies (token) are included in the request
             );
-            alert("Scanned successfully! Points updated.");
-            router.push("/profile");
+            toast.success("Scanned successfully! Points updated.");
             router.refresh();
+            router.push("/profile");
         } catch (error) {
             console.error("Error updating points:", error);
-            alert(error?.response?.data?.message || "Failed to update points.");
+            toast.error(error?.response?.data?.message || "Failed to update points.");
             setScanning(true);
         }
     };

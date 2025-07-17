@@ -50,7 +50,7 @@ export default function SignupPage() {
       router.push("/profile"); // Redirect after manual signup
     } catch (error) {
       console.log("Signup failed", error.message);
-      toast.error(error.message);
+      toast.error("Signup failed");
     } finally {
       setLoading(false);
     }
