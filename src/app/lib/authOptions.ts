@@ -40,6 +40,7 @@ export const authOptions: NextAuthOptions = {
     ],
     session: {
         strategy: "jwt",
+        maxAge: 24 * 60 * 60, // 24 hours
     },
     callbacks: {
         async signIn({ user, account }) {
@@ -53,7 +54,7 @@ export const authOptions: NextAuthOptions = {
                         fullName: user.name,
                         email: user.email,
                         googleId: account?.providerAccountId,
-                        mobileNumber: `google_${account?.providerAccountId}`.slice(0, 10),
+                        mobileNumber: `g${account?.providerAccountId}`.slice(0, 10),
                     });
                     await existingUser.save();
                     console.log("✅ New Google user saved!");
